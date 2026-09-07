@@ -1,6 +1,6 @@
 ﻿# Batch Data Pipeline with Hadoop Ecosystem and Airflow Orchestration
 
-**Status:** In Progress (Day 2/5)
+**Status:** In Progress (Day 3/5)
 
 ## Overview
 
@@ -32,16 +32,30 @@ Screenshots: docs/screenshots/hive_total_rows.png and docs/screenshots/hive_reve
 
 Key concept - External vs Managed tables: External table data is owned by our pipeline, DROP TABLE only removes metadata. Managed table data is owned by Hive, DROP TABLE deletes data permanently. Used EXTERNAL because the Python script controls the data lifecycle.
 
-### Day 3 - Sqoop - coming next
+### Day 3 - Sqoop (done)
+
+- Set up a MySQL 8.0 container (mysql-source) on hadoop-net with a sample customers table (10 rows)
+- Installed Sqoop 1.4.7 inside the hadoop-sandbox container (downloaded from the Apache Attic archive, since Sqoop was retired in 2021)
+- Downloaded and configured the MySQL Connector/J 8.0.33 JDBC driver
+- Key debugging: Sqoop 1.4.7 (built 2017) has multiple jar version conflicts with Hadoop 3.5.0 - commons-cli, commons-lang3, and commons-io all needed manual resolution. Fixed by using commons-cli 1.4 (compatible with both Sqoop parser and Hadoop GenericOptionsParser) and removing Sqoop bundled commons-lang3/commons-io jars that were older than what Hadoop needs
+- Bypassed the sqoop wrapper script and invoked Sqoop directly via java -cp with a manually ordered classpath to control which jar versions load first
+- Successfully imported the customers table (10 rows) from MySQL into HDFS at /project_a/raw/customers/ using sqoop import
+
+Commands and full debugging notes: see hive/03_sqoop_setup_and_import.sh
+
+Result: 10/10 records transferred successfully, verified against source MySQL data
 ### Day 4 - PySpark - coming next
 ### Day 5 - Airflow orchestration - coming next
 
 ## Tech Stack
 
 - Python, Pandas
-- Hadoop HDFS, Apache Hive
-- Upcoming: Sqoop, PySpark, PostgreSQL, Apache Airflow
+- Hadoop HDFS, Apache Hive, Sqoop
+- Upcoming: PySpark, PostgreSQL, Apache Airflow
 
 ## Folder Structure
 
 project-a-batch-pipeline contains: data/raw, data/processed, scripts/, hive/, docs/screenshots/, notebooks/, dags/, requirements.txt
+
+
+
