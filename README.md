@@ -1,6 +1,6 @@
 ﻿# Batch Data Pipeline with Hadoop Ecosystem and Airflow Orchestration
 
-**Status:** In Progress (Day 3/5)
+**Status:** In Progress (Day 4/5)
 
 ## Overview
 
@@ -44,18 +44,30 @@ Key concept - External vs Managed tables: External table data is owned by our pi
 Commands and full debugging notes: see hive/03_sqoop_setup_and_import.sh
 
 Result: 10/10 records transferred successfully, verified against source MySQL data
-### Day 4 - PySpark - coming next
+### Day 4 - PySpark (done)
+
+- Installed Spark 3.5.7 (bin-hadoop3 build) inside the hadoop-sandbox container - no jar version conflicts this time, unlike Sqoop on Day 3, since this build targets modern Hadoop 3.x directly
+- Set up a PostgreSQL 15 container (postgres-target) as the pipeline final destination
+- Wrote a PySpark job (scripts/spark_transform.py) that reads orders_cleaned.csv directly from HDFS, groups by region to compute order_count and total revenue, and writes the result to PostgreSQL via JDBC
+- Verified row count (1962) and revenue-by-region figures match Day 1 and Day 2 exactly
+- Verified the written data by querying PostgreSQL directly
+
+Commands and script: see hive/04_spark_setup_and_transform.sh and scripts/spark_transform.py
+
+Result: region_summary table in PostgreSQL confirmed matching - South 1155101.46, North 1123653.85, East 1071437.21, West 579455.41
 ### Day 5 - Airflow orchestration - coming next
 
 ## Tech Stack
 
 - Python, Pandas
-- Hadoop HDFS, Apache Hive, Sqoop
-- Upcoming: PySpark, PostgreSQL, Apache Airflow
+- Hadoop HDFS, Apache Hive, Sqoop, PySpark, PostgreSQL
+- Upcoming: Apache Airflow
 
 ## Folder Structure
 
 project-a-batch-pipeline contains: data/raw, data/processed, scripts/, hive/, docs/screenshots/, notebooks/, dags/, requirements.txt
+
+
 
 
 
