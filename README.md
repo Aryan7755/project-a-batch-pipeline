@@ -1,6 +1,6 @@
 ﻿# Batch Data Pipeline with Hadoop Ecosystem and Airflow Orchestration
 
-**Status:** In Progress (Day 4/5)
+**Status:** COMPLETE (5/5 days)
 
 ## Overview
 
@@ -55,17 +55,33 @@ Result: 10/10 records transferred successfully, verified against source MySQL da
 Commands and script: see hive/04_spark_setup_and_transform.sh and scripts/spark_transform.py
 
 Result: region_summary table in PostgreSQL confirmed matching - South 1155101.46, North 1123653.85, East 1071437.21, West 579455.41
-### Day 5 - Airflow orchestration - coming next
+### Day 5 - Airflow Orchestration (done)
+
+- Installed Apache Airflow 2.9.3 inside the hadoop-sandbox container using the official constraints file to avoid dependency conflicts
+- Initialized the Airflow metadata database and created an admin user
+- Wrote a DAG (project_a_pipeline) with two tasks chained together:
+  Task 1 (sqoop_import_customers): runs Sqoop codegen then import, dynamically resolving the generated compile directory since it changes path on every run
+  Task 2 (spark_transform_orders): runs the Day 4 PySpark transform job
+  Dependency: sqoop_import_customers then spark_transform_orders
+- Tested both tasks individually using airflow tasks test (executes for real, no scheduler required)
+- Both tasks completed with SUCCESS: Sqoop retrieved 10 records, Spark processed 1962 rows and wrote region_summary to PostgreSQL
+
+Commands and DAG: see hive/05_airflow_setup_and_dag.sh and dags/project_a_pipeline.py
+
+Result: full pipeline (MySQL -> Sqoop -> HDFS -> Spark -> PostgreSQL) now orchestrated as a single DAG instead of manually run steps
+
+PROJECT A COMPLETE - full 5-day batch pipeline built and verified end-to-end
 
 ## Tech Stack
 
 - Python, Pandas
-- Hadoop HDFS, Apache Hive, Sqoop, PySpark, PostgreSQL
-- Upcoming: Apache Airflow
+- Hadoop HDFS, Apache Hive, Sqoop, PySpark, PostgreSQL, Apache Airflow
 
 ## Folder Structure
 
 project-a-batch-pipeline contains: data/raw, data/processed, scripts/, hive/, docs/screenshots/, notebooks/, dags/, requirements.txt
+
+
 
 
 
